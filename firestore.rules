@@ -1,0 +1,78 @@
+rules_version = '2';
+
+// ============================================================================
+// Assumed Data Model & Access Architecture (Backend-Only Firestore)
+// ============================================================================
+//
+// All Firestore collections in Chaos Room Simulator are strictly backend-only.
+// The browser client (apps/web) has ZERO direct Firestore access; all reads,
+// writes, transactions, caching, and accounting are performed exclusively by
+// backend Cloud Functions (functions/) using the Firebase Admin SDK, which
+// bypasses client Security Rules.
+//
+// Assumed backend-only collections (schemas enforced by Cloud Functions):
+//   - analysisCache       : Shared canonical AI analysis cache keyed by
+//                           deterministic SHA-256 packet identity.
+//   - generationAttempts  : Atomic generation attempt records and active leases
+//                           used to deduplicate/coordinate AI invocations.
+//   - requestRecords      : Per-request execution, cache-hit, and audit records.
+//   - quotaDays           : Daily AI generation budget/quota accounting docs.
+//   - quotaMonths         : Monthly AI generation budget/quota accounting docs.
+//   - quotaMinutes        : Per-minute rate/quota accounting docs.
+//   - visitorState        : Server-managed per-visitor rate-limit/state docs.
+//   - evaluationRuns      : Backend evaluation and verification run records.
+//   - systemControl       : Operational control flags / AI kill switches.
+//
+// Security Policy:
+//   - Complete client/browser denial across all collections and nested paths.
+//   - Every direct client read (get, list) and write (create, update, delete)
+//     evaluates to `if false;` for both unauthenticated and authenticated users.
+// ============================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Explicit denial for each assumed backend-only collection and any
+    // nested subcollections under them.
+
+    match /analysisCache/{document=**} {
+      allow read, write: if false;
+    }
+
+    match /generationAttempts/{document=**} {
+      allow read, write: if false;
+    }
+
+    match /requestRecords/{document=**} {
+      allow read, write: if false;
+    }
+
+    match /quotaDays/{document=**} {
+      allow read, write: if false;
+    }
+
+    match /quotaMonths/{document=**} {
+      allow read, write: if false;
+    }
+
+    match /quotaMinutes/{document=**} {
+      allow read, write: if false;
+    }
+
+    match /visitorState/{document=**} {
+      allow read, write: if false;
+    }
+
+    match /evaluationRuns/{document=**} {
+      allow read, write: if false;
+    }
+
+    match /systemControl/{document=**} {
+      allow read, write: if false;
+    }
+
+    // Default catch-all deny for any other collection or document path.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

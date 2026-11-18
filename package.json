@@ -1,0 +1,39 @@
+{
+  "name": "chaos-room-simulator",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Chaos Room — Deterministic incident investigation simulator for a fictional event-reservation platform",
+  "workspaces": [
+    "packages/shared",
+    "apps/web",
+    "functions"
+  ],
+  "scripts": {
+    "dev": "npm --workspace=@chaos-room/web run dev",
+    "build": "npm --workspace=@chaos-room/shared run build && npm --workspace=@chaos-room/functions run build && npm --workspace=@chaos-room/web run build",
+    "build:review": "npm --workspace=@chaos-room/shared run build && npm --workspace=@chaos-room/functions run build && npm --workspace=@chaos-room/web run build:review",
+    "preview": "npm --workspace=@chaos-room/web run preview",
+    "test": "vitest run --config vitest.config.ts",
+    "test:watch": "vitest",
+    "test:emulator": "node scripts/run-emulator-tests.mjs",
+    "typecheck": "tsc -b packages/shared apps/web functions"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^4.0.1",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.2.0",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react": "^4.3.4",
+    "esbuild": "^0.24.2",
+    "firebase": "^11.2.0",
+    "firebase-tools": "^13.31.0",
+    "jsdom": "^25.0.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5",
+    "vitest": "^2.1.8"
+  }
+}
