@@ -15,9 +15,19 @@
 
 ### Verification Commands
 ```bash
+# Clean install from lockfile
+npm ci
+
+# Typecheck all workspaces (@chaos-room/shared, @chaos-room/functions, @chaos-room/web)
 npm run typecheck
+
+# Run unit and integration test suites (12 files, 138 tests; pretest builds @chaos-room/functions)
 npm test
+
+# Build shared package, self-contained functions bundle (functions/dist/index.js), and web app
 npm run build
+
+# Run Firestore security rules & backend transaction tests against the local emulator (12 tests)
 npm run test:emulator
 ```
 *(On Windows PowerShell with restricted `.ps1` execution policy, invoke `npm.cmd` instead of `npm`.)*

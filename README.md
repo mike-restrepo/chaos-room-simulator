@@ -86,23 +86,24 @@ Each scenario spans **15 simulated minutes (`00:00` – `15:00`)** in 5-second d
 - **Firestore Emulator Tests (`npm run test:emulator` only):** **OpenJDK 21+** (required by Firebase's local Firestore emulator JAR).
 
 ```bash
-# Install workspace dependencies from the repository root
-npm install
+# 1. Install workspace dependencies from the lockfile
+npm ci
 
-# Start the local web console (http://localhost:5173) using MockAnalyzeIncidentTransport
-npm run dev
-
-# Type-check all workspaces (packages/shared, apps/web, functions)
+# 2. Typecheck all workspaces (@chaos-room/shared, @chaos-room/functions, @chaos-room/web)
 npm run typecheck
 
-# Run unit, causal branch, invariant, UI, onboarding, and self-contained bundle tests
+# 3. Run all unit & integration tests (12 suites, 138 tests)
+#    (pretest automatically builds the self-contained @chaos-room/functions bundle)
 npm test
 
-# Run Firestore emulator transaction, quota ledger, and security-rule tests (requires JDK 21+)
+# 4. Build shared types, self-contained Cloud Functions bundle, and production web bundle
+npm run build
+
+# 5. Run Firestore Emulator security-rules & transaction tests (12 tests; requires OpenJDK 21+)
 npm run test:emulator
 
-# Build shared package, self-contained functions/dist/index.js, and production web bundle
-npm run build
+# 6. Start the local Vite dev server (http://localhost:5173; defaults to offline MockAnalyzeIncidentTransport)
+npm run dev
 ```
 
 > **Windows PowerShell note:** If your PowerShell execution policy blocks `.ps1` shims, invoke `npm.cmd` and `npx.cmd` instead of `npm` and `npx`.

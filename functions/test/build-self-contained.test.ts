@@ -7,9 +7,17 @@ import { describe, expect, it } from 'vitest';
 
 const repoRoot = path.resolve(__dirname, '../..');
 const functionsDistFile = path.resolve(__dirname, '../dist/index.js');
+const buildScript = path.resolve(__dirname, '../scripts/build.mjs');
 
 describe('functions self-contained deployment bundle', () => {
   it('bundles @chaos-room/shared cleanly without workspace symlinks and imports in an isolated temp dir', async () => {
+    if (!fs.existsSync(functionsDistFile)) {
+      execFileSync(process.execPath, [buildScript], {
+        cwd: repoRoot,
+        stdio: 'pipe',
+      });
+    }
+
     expect(fs.existsSync(functionsDistFile)).toBe(true);
     const bundleContent = fs.readFileSync(functionsDistFile, 'utf8');
     const codeWithoutLineComments = bundleContent.replace(/^\s*\/\/.*$/gm, '');
@@ -22,6 +30,10 @@ describe('functions self-contained deployment bundle', () => {
     try {
       const copiedBundle = path.join(tempDeployDir, 'index.js');
       fs.copyFileSync(functionsDistFile, copiedBundle);
+      const functionsDistMapFile = `${functionsDistFile}.map`;
+      if (fs.existsSync(functionsDistMapFile)) {
+        fs.copyFileSync(functionsDistMapFile, `${copiedBundle}.map`);
+      }
 
       // Syntax check on copied standalone bundle outside the workspace.
       execFileSync(process.execPath, ['--check', copiedBundle], { stdio: 'pipe' });

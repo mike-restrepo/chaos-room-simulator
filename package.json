@@ -13,6 +13,7 @@
     "build": "npm --workspace=@chaos-room/shared run build && npm --workspace=@chaos-room/functions run build && npm --workspace=@chaos-room/web run build",
     "build:review": "npm --workspace=@chaos-room/shared run build && npm --workspace=@chaos-room/functions run build && npm --workspace=@chaos-room/web run build:review",
     "preview": "npm --workspace=@chaos-room/web run preview",
+    "pretest": "npm --workspace=@chaos-room/functions run build",
     "test": "vitest run --config vitest.config.ts",
     "test:watch": "vitest",
     "test:emulator": "node scripts/run-emulator-tests.mjs",
