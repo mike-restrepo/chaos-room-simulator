@@ -12,13 +12,15 @@ Chaos Room Simulator is a deterministic SRE incident investigation simulator for
 
 ## Incident Scenarios
 
-Every scenario shares a 7-node platform topology (`visitor` → `api-gateway` → `reservation-service` → `inventory-db`, plus asynchronous `confirmation-queue` → `confirmation-worker` → `notification-provider`) and includes a plausible distraction clue alongside the real fault:
+Three synthetic incidents share one seven-service reservation platform. Each presents a different pattern of customer impact and a plausible distraction. Start with the live simulator if you want to investigate without seeing the answers first:
 
-| ID | Symptom Title | Underlying Failure Mode | Plausible Distraction |
-| :--- | :--- | :--- | :--- |
-| **`incident-001`** | *“Reservations are timing out”* | `reservation-service` `v2.14.0` early return in `reserveWithTimeout` skips `conn.Release()`, leaking DB pool handles until `inventory-db` (`100/100`) saturates while DB CPU stays ~38%. | `+18%` promotional newsletter traffic bump (well within rated capacity). |
-| **`incident-002`** | *“Reservations succeed, confirmations stall”* | External `notification-provider` latency slowdown triggers an unconstrained `0ms`-delay retry loop in `confirmation-worker`, creating a retry storm (`2.5x–6.18x`) and queue backlog while bookings succeed (`0.0%` reservation error rate). | Apparent suspicion of upstream reservation/worker crashes despite healthy `115–133 ms` reservation commits. |
-| **`incident-003`** | *“A release leaves confirmations behind”* | `reservation-service` `v2.15.0` emits `schemaVersion "2.0"` payloads nesting `reservation.id` instead of root `reservationId`; `confirmation-worker` `v1.8.0` NACKs `v2.0` messages while `v1.0` canary bookings deliver normally. | `+22.2%` promotional campaign arrival bump (`108` → `132 req/min`) coinciding with queue growth. |
+| Incident | Symptom | What to investigate |
+| :--- | :--- | :--- |
+| **1** | Reservations are timing out | Trace requests through the gateway, reservation service, and inventory database. |
+| **2** | Reservations succeed, confirmations stall | Compare successful bookings with asynchronous confirmation delivery. |
+| **3** | A release leaves confirmations behind | Follow events from reservation creation through the confirmation worker. |
+
+The outcome and debrief reveal each root cause after the visitor chooses a response. Source files and scenario authoring docs contain the full ground truth for readers who want to inspect the implementation.
 
 ---
 
